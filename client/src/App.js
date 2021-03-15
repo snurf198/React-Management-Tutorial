@@ -8,6 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import { withStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
 
 const styles = theme => ({
   root: {
@@ -20,34 +21,21 @@ const styles = theme => ({
   }
 });
 
-
-const customers = [
-  {
-  'id' : 1,
-  'image' : 'https://placeimg.com/64/64/1',
-  'name' : '홍길동',
-  'birthday' : '961222',
-  'gender' : '남자',
-  'job' : '대학생',
-}, 
-{
-  'id' : 2,
-  'image' : 'https://placeimg.com/64/64/2',
-  'name' : '이상민',
-  'birthday' : '960305',
-  'gender' : '남자',
-  'job' : '대학생',
-},
-{
-  'id' : 3,
-  'image' : 'https://placeimg.com/64/64/3',
-  'name' : '이수민',
-  'birthday' : '921205',
-  'gender' : '남자',
-  'job' : '대학생',
-}
-]
 function App(props) {
+  const [state, setState] = useState({
+    customers: ""
+  });
+  
+  const callApi = async () => {
+    const response = await fetch('http://localhost:5000/api/customers');
+    const body = await response.json();
+    return body;
+  }
+
+  useEffect(()=>{
+    callApi().then(res => setState({customers: res})).catch(err  => console.log(err));
+  });
+
   const { classes } = props;
   return (
     <Paper className={classes.root}>
@@ -63,7 +51,7 @@ function App(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {customers.map(c => <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />)}  
+          {state.customers ? state.customers.map(c => <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />) : ""}  
         </TableBody> 
       </Table>
     </Paper>
